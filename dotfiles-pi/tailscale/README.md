@@ -5,14 +5,14 @@ Installs Tailscale and enables SSH over Tailscale.
 ## Usage
 
 ```bash
-~/dotfiles-linux/tailscale/main
+~/dotfiles-pi/tailscale/main
 ```
 
 If you want non-interactive setup, set an auth key:
 
 ```bash
 export TS_AUTHKEY="tskey-..."
-~/dotfiles-linux/tailscale/main
+~/dotfiles-pi/tailscale/main
 ```
 
 Otherwise, it will print:
