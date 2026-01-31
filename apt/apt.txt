@@ -1,7 +1,6 @@
 bat
 eza
 fd-find
-fzf
 git
 python-is-python3
 python3

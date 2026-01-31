@@ -22,6 +22,12 @@ if [[ ! -d "$HOME/.local/share/powerlevel10k" ]]; then
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$HOME/.local/share/powerlevel10k"
 fi
 
+# Install fzf from GitHub (Debian package lacks zsh bindings)
+if [[ ! -d "$HOME/.fzf" ]]; then
+  git clone --depth=1 https://github.com/junegunn/fzf.git "$HOME/.fzf"
+  "$HOME/.fzf/install" --bin --key-bindings --completion --no-update-rc
+fi
+
 $dir/build_rbw
 
 lg "Creating fd symlink"
