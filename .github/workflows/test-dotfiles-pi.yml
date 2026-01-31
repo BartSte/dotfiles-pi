@@ -1,0 +1,43 @@
+name: test-dotfiles-pi
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  pi:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run base initialize (curl)
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -O https://raw.githubusercontent.com/BartSte/dotfiles/master/dotfiles/initialize
+          bash ./initialize
+          rm ./initialize
+
+      - name: Checkout pi layer as bare repo
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --bare "$GITHUB_WORKSPACE" "$HOME/dotfiles-pi.git"
+          git --work-tree="$HOME" --git-dir="$HOME/dotfiles-pi.git" checkout -f
+
+      - name: Run dotfiles-pi main
+        shell: bash
+        run: |
+          set -euo pipefail
+          ~/dotfiles-pi/main
+
+      - name: Assertions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$HOME/.dotfiles_config.sh"
+          command -v git
+          command -v zsh
+          test -d "$HOME/.fzf"
+          test -e "$HOME/dotfiles-pi/main"

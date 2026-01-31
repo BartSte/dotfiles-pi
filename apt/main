@@ -2,7 +2,7 @@
 
 set -eo pipefail
 
-dir=~/dotfiles-linux/apt
+dir=~/dotfiles-pi/apt
 
 lg "Installing apt dependencies"
 sudo apt update -y
