@@ -10,11 +10,19 @@ sudo apt upgrade -y
 cat $dir/apt.txt | xargs sudo apt install -y
 
 # Install latest Neovim (0.11+) from official release tarball (Debian/RPi)
+ARCH=$(uname -m)
+if [[ "$ARCH" == "aarch64" || "$ARCH" == "arm64" ]]; then
+  NVIM_TARBALL="nvim-linux-arm64.tar.gz"
+else
+  NVIM_TARBALL="nvim-linux-x86_64.tar.gz"
+fi
 TMP=$(mktemp -d)
-curl -L https://github.com/neovim/neovim/releases/latest/download/nvim-linux-arm64.tar.gz -o "$TMP/nvim.tar.gz"
+curl -L "https://github.com/neovim/neovim/releases/latest/download/$NVIM_TARBALL" -o "$TMP/nvim.tar.gz"
 sudo rm -rf /opt/nvim
 sudo tar -C /opt -xzf "$TMP/nvim.tar.gz"
-sudo mv /opt/nvim-linux-arm64 /opt/nvim
+# normalize install dir name
+sudo rm -rf /opt/nvim
+sudo mv /opt/nvim-linux-* /opt/nvim
 sudo ln -sf /opt/nvim/bin/nvim /usr/local/bin/nvim
 
 # Install powerlevel10k (no apt package on Debian/RPi)
@@ -28,7 +36,7 @@ if [[ ! -d "$HOME/.fzf" ]]; then
   "$HOME/.fzf/install" --bin --key-bindings --completion --no-update-rc
 fi
 
-$dir/build_rbw
+$dir/install_rbw
 
 lg "Creating fd symlink"
 mkdir -p ~/.local/bin
