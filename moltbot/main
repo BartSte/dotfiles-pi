@@ -5,4 +5,11 @@ set -eo pipefail
 # NOTE: Do not store secrets here (public repo).
 # Use rbw or environment variables at runtime.
 
-echo "moltbot: placeholder setup (no secrets stored)"
+mkdir -p "$HOME/.clawdbot"
+
+# Seed config template if missing
+if [[ ! -f "$HOME/.clawdbot/clawdbot.json" ]]; then
+  cp "$HOME/moltbot/clawdbot.json.template" "$HOME/.clawdbot/clawdbot.json"
+fi
+
+echo "moltbot: setup complete (run moltbot/auth for secrets)"
