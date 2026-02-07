@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "b4634e3e-2cad-441f-b0b9-a3032dafe5d4",
+      "name": "NS storingen/werkzaamheden check (Utrecht→Delft via Rotterdam)",
+      "enabled": true,
+      "deleteAfterRun": false,
+      "createdAtMs": 1769695464570,
+      "updatedAtMs": 1770270300000,
+      "schedule": {
+        "kind": "cron",
+        "expr": "45 6 * * 1,4",
+        "tz": "Europe/Amsterdam"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "next-heartbeat",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Check NS for storingen/werkzaamheden affecting the 07:18 route Utrecht Centraal → Delft (transfer at Rotterdam). If everything is normal, output exactly `NO_REPLY`. If there is any disruption OR uncertainty, send a short Telegram message to chatId 7344082254 with the status.",
+        "deliver": false,
+        "channel": "telegram",
+        "to": "7344082254"
+      },
+      "isolation": {
+        "postToMainPrefix": "Cron",
+        "postToMainMode": "summary",
+        "postToMainMaxChars": 8000
+      },
+      "state": {
+        "nextRunAtMs": 1770615900000,
+        "lastRunAtMs": 1770270300000,
+        "lastStatus": "ok",
+        "lastDurationMs": 20315
+      }
+    },
+    {
+      "id": "2cb22b67-2c92-48ae-9416-c0a0ea6fbfb5",
+      "name": "NS storingen/werkzaamheden check (Delft→Utrecht via Rotterdam)",
+      "enabled": true,
+      "deleteAfterRun": false,
+      "createdAtMs": 1769695550603,
+      "updatedAtMs": 1770307200001,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 17 * * 1,4",
+        "tz": "Europe/Amsterdam"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "next-heartbeat",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Check NS for storingen/werkzaamheden affecting the ~17:46 return route Delft → Utrecht (transfer at Rotterdam). If everything is normal, output exactly `NO_REPLY`. If there is any disruption OR uncertainty, send a short Telegram message to chatId 7344082254 with the status.",
+        "deliver": false,
+        "channel": "telegram",
+        "to": "7344082254"
+      },
+      "isolation": {
+        "postToMainPrefix": "Cron",
+        "postToMainMode": "summary",
+        "postToMainMaxChars": 8000
+      },
+      "state": {
+        "nextRunAtMs": 1770652800000,
+        "lastRunAtMs": 1770307200001,
+        "lastStatus": "ok",
+        "lastDurationMs": 19052
+      }
+    },
+    {
+      "id": "a727cb6e-b441-4cac-b3f7-8920079a18f0",
+      "name": "Dropbox pull (hourly)",
+      "enabled": true,
+      "deleteAfterRun": false,
+      "createdAtMs": 1769750471970,
+      "updatedAtMs": 1770454800000,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 * * * *",
+        "tz": "Europe/Amsterdam"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "next-heartbeat",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run `/usr/bin/rclone sync dropbox: ~/dropbox --progress`. If it succeeds, output exactly `NO_REPLY`. If it fails, send a brief Telegram message to chatId 7344082254 with the error summary via the message tool.",
+        "channel": "last",
+        "deliver": false
+      },
+      "isolation": {
+        "postToMainPrefix": "Cron",
+        "postToMainMode": "summary",
+        "postToMainMaxChars": 8000
+      },
+      "state": {
+        "nextRunAtMs": 1770458400000,
+        "lastRunAtMs": 1770454800000,
+        "lastStatus": "ok",
+        "lastDurationMs": 9127
+      }
+    }
+  ]
+}
