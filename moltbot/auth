@@ -23,7 +23,7 @@ if [[ -z "$TELEGRAM_BOT_TOKEN" ]]; then
   TELEGRAM_BOT_TOKEN=$(rbw get telegram_bot_token 2>/dev/null | tr -d '\n' || true)
 fi
 if [[ -z "$BRAVE_API_KEY" ]]; then
-  BRAVE_API_KEY=$(rbw get brave_search_token 2>/dev/null | tr -d '\n' || true)
+  BRAVE_API_KEY=$(rbw get brave_search_api_token 2>/dev/null | tr -d '\n' || true)
 fi
 if [[ -z "$GATEWAY_TOKEN" ]]; then
   GATEWAY_TOKEN=$(rbw get clawdbot_gateway_token 2>/dev/null | tr -d '\n' || true)

@@ -12,5 +12,5 @@ Store private data in rbw and load it at runtime.
 
 ## Required rbw entries
 - `telegram_bot_token`
-- `brave_search_token`
+- `brave_search_api_token`
 - `clawdbot_gateway_token`
