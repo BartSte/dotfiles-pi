@@ -7,6 +7,16 @@ dir=~/dotfiles-pi/apt
 lg "Installing apt dependencies"
 sudo apt update -y
 sudo apt upgrade -y
+
+# Ensure Tailscale repo is available when requested
+if grep -q '^tailscale' "$dir/apt.txt"; then
+  if [[ ! -f /etc/apt/sources.list.d/tailscale.list ]]; then
+    curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/noble.gpg | sudo gpg --dearmor -o /usr/share/keyrings/tailscale-archive-keyring.gpg
+    echo "deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/ubuntu noble main" | sudo tee /etc/apt/sources.list.d/tailscale.list >/dev/null
+    sudo apt update -y
+  fi
+fi
+
 cat $dir/apt.txt | xargs sudo apt install -y
 
 # Install latest Neovim (0.11+) from official release tarball (Debian/RPi)
