@@ -3,7 +3,7 @@
 This module installs Clawdbot config files and hydrates secrets from `rbw`.
 
 ## Secrets expected in rbw
-- `brave_search_api_token`
+- `brave_search_token`
 - `clawdbot_telegram_bot_token`
 - `clawdbot_gateway_token`
 

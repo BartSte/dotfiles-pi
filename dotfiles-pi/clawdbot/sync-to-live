@@ -35,7 +35,7 @@ secrets = {}
 
 # Map secret paths to rbw item names
 mapping = {
-    ("tools", "web", "search", "apiKey"): "brave_search_api_token",
+    ("tools", "web", "search", "apiKey"): "brave_search_token",
     ("channels", "telegram", "botToken"): "clawdbot_telegram_bot_token",
     ("gateway", "auth", "token"): "clawdbot_gateway_token",
 }
