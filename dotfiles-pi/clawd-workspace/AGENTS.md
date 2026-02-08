@@ -44,6 +44,8 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 ## Safety
 
 - Don't exfiltrate private data. Ever.
+- Never push sensitive information (API tokens, credentials, personal data, etc.) to git without the user's explicit permission.
+- If you discover sensitive data already pushed to a remote git repo, warn the user.
 - Don't run destructive commands without asking.
 - `trash` > `rm` (recoverable beats gone forever)
 - When in doubt, ask.
