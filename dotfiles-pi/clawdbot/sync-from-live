@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+SOURCE="$HOME/.clawdbot/clawdbot.json"
+
+if [[ ! -f "$SOURCE" ]]; then
+  echo "Missing $SOURCE" >&2
+  exit 1
+fi
+
+DIR="$DIR" SOURCE="$SOURCE" python - <<'PY'
+import json
+import os
+import pathlib
+
+DIR = os.environ["DIR"]
+SOURCE = os.environ["SOURCE"]
+
+paths_path = pathlib.Path(DIR) / "secrets.paths.json"
+base_path = pathlib.Path(DIR) / "clawdbot.base.json"
+
+paths = json.loads(paths_path.read_text(encoding="utf-8"))
+
+data = json.loads(pathlib.Path(SOURCE).read_text(encoding="utf-8"))
+
+# redact secrets to placeholders
+placeholders = {
+    ("tools", "web", "search", "apiKey"): "__BRAVE_SEARCH_API_TOKEN__",
+    ("channels", "telegram", "botToken"): "__CLAWDBOT_TELEGRAM_BOT_TOKEN__",
+    ("gateway", "auth", "token"): "__CLAWDBOT_GATEWAY_TOKEN__",
+}
+
+for path in paths:
+    t = tuple(path)
+    if t not in placeholders:
+        raise SystemExit(f"No placeholder for secret path: {path}")
+    cur = data
+    for key in path[:-1]:
+        if key not in cur:
+            cur = None
+            break
+        cur = cur[key]
+    if cur is not None and path[-1] in cur:
+        cur[path[-1]] = placeholders[t]
+
+base_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+PY

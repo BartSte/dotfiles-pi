@@ -8,7 +8,10 @@ This module installs Clawdbot config files and hydrates secrets from `rbw`.
 - `clawdbot_gateway_token`
 
 ## What is included
-- `clawdbot.json` (template, secrets injected on install)
+- `clawdbot.base.json` (tracked, no secrets)
+- `secrets.paths.json` (tracked, list of secret fields)
+- `sync-to-live` (builds `~/.clawdbot/clawdbot.json` from base + rbw)
+- `sync-from-live` (redacts secrets from live config into base)
 - `cron/jobs.json`
 - `credentials/telegram-allowFrom.json`
 

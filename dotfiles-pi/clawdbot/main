@@ -20,40 +20,8 @@ if ! command -v rbw >/dev/null 2>&1; then
 fi
 
 DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-TARGET="$HOME/.clawdbot"
 
-mkdir -p "$TARGET/cron" "$TARGET/credentials"
+# Use the new sync-to-live script (base + rbw secrets)
+"$DIR/sync-to-live"
 
-DIR="$DIR" TARGET="$TARGET" python - <<'PY'
-import json
-import os
-import pathlib
-import subprocess
-
-DIR = os.environ["DIR"]
-TARGET = os.environ["TARGET"]
-
-
-def rbw(item: str) -> str:
-    return subprocess.check_output(["rbw", "get", item], text=True).strip()
-
-with open(os.path.join(DIR, "clawdbot.json.template"), "r", encoding="utf-8") as f:
-    data = json.load(f)
-
-data["tools"]["web"]["search"]["apiKey"] = rbw("brave_search_api_token")
-data["channels"]["telegram"]["botToken"] = rbw("clawdbot_telegram_bot_token")
-data["gateway"]["auth"]["token"] = rbw("clawdbot_gateway_token")
-
-out_path = pathlib.Path(TARGET) / "clawdbot.json"
-out_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
-
-# Non-secret configs
-cron_src = pathlib.Path(DIR) / "cron" / "jobs.json"
-cred_src = pathlib.Path(DIR) / "credentials" / "telegram-allowFrom.json"
-cron_dst = pathlib.Path(TARGET) / "cron" / "jobs.json"
-cred_dst = pathlib.Path(TARGET) / "credentials" / "telegram-allowFrom.json"
-cron_dst.write_text(cron_src.read_text(encoding="utf-8"), encoding="utf-8")
-cred_dst.write_text(cred_src.read_text(encoding="utf-8"), encoding="utf-8")
-PY
-
-unset DIR TARGET
+unset DIR

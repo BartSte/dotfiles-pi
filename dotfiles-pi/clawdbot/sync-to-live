@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+TARGET="$HOME/.clawdbot"
+
+if ! command -v rbw >/dev/null 2>&1; then
+  echo "rbw is required but not installed." >&2
+  exit 1
+fi
+
+mkdir -p "$TARGET/cron" "$TARGET/credentials"
+
+DIR="$DIR" TARGET="$TARGET" python - <<'PY'
+import json
+import os
+import pathlib
+import subprocess
+
+DIR = os.environ["DIR"]
+TARGET = os.environ["TARGET"]
+
+
+def rbw(item: str) -> str:
+    return subprocess.check_output(["rbw", "get", item], text=True).strip()
+
+base_path = pathlib.Path(DIR) / "clawdbot.base.json"
+paths_path = pathlib.Path(DIR) / "secrets.paths.json"
+
+base = json.loads(base_path.read_text(encoding="utf-8"))
+paths = json.loads(paths_path.read_text(encoding="utf-8"))
+
+# Build secrets overlay from rbw
+secrets = {}
+
+# Map secret paths to rbw item names
+mapping = {
+    ("tools", "web", "search", "apiKey"): "brave_search_api_token",
+    ("channels", "telegram", "botToken"): "clawdbot_telegram_bot_token",
+    ("gateway", "auth", "token"): "clawdbot_gateway_token",
+}
+
+for path in paths:
+    t = tuple(path)
+    if t not in mapping:
+        raise SystemExit(f"No rbw mapping for secret path: {path}")
+    # set nested dict
+    cur = secrets
+    for key in path[:-1]:
+        cur = cur.setdefault(key, {})
+    cur[path[-1]] = rbw(mapping[t])
+
+# Deep merge (base <- secrets)
+
+def merge(a, b):
+    for k, v in b.items():
+        if isinstance(v, dict) and isinstance(a.get(k), dict):
+            merge(a[k], v)
+        else:
+            a[k] = v
+    return a
+
+merged = merge(base, secrets)
+
+out_path = pathlib.Path(TARGET) / "clawdbot.json"
+out_path.write_text(json.dumps(merged, indent=2) + "\n", encoding="utf-8")
+
+# Non-secret configs
+cron_src = pathlib.Path(DIR) / "cron" / "jobs.json"
+cred_src = pathlib.Path(DIR) / "credentials" / "telegram-allowFrom.json"
+cron_dst = pathlib.Path(TARGET) / "cron" / "jobs.json"
+cred_dst = pathlib.Path(TARGET) / "credentials" / "telegram-allowFrom.json"
+cron_dst.write_text(cron_src.read_text(encoding="utf-8"), encoding="utf-8")
+cred_dst.write_text(cred_src.read_text(encoding="utf-8"), encoding="utf-8")
+PY
