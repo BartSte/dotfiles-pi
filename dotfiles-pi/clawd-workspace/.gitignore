@@ -1,0 +1,7 @@
+# Clawdbot workspace (local only)
+memory/
+tmp/
+canvas/
+.clawdbot/
+# Optional caches/logs
+*.log
